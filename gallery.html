@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moments</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gallery-wrap {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4rem;
+            height: 70vh;
+            padding: 0 5vw;
+        }
+
+        .photo-frame {
+            position: relative;
+            width: 300px;
+            /* Base width */
+            height: 400px;
+            overflow: hidden;
+            border: 1px solid var(--accent-gold);
+            transition: transform 0.5s;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .photo-frame:nth-child(2) {
+            transform: translateY(-30px);
+            /* Stagger layout */
+        }
+
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1s;
+        }
+
+        .photo-frame:hover img {
+            transform: scale(1.1);
+        }
+
+        .caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(15, 23, 42, 0.9);
+            padding: 1rem;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            border-top: 1px solid var(--accent-gold);
+            text-align: center;
+            font-family: var(--font-heading);
+            color: var(--accent-gold);
+        }
+
+        .photo-frame:hover .caption {
+            transform: translateY(0);
+        }
+
+        /* Modal */
+        .modal-view {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 200;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            cursor: zoom-out;
+        }
+
+        .modal-img {
+            max-height: 90vh;
+            max-width: 90vw;
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.8);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 class="gsap-reveal" style="position: absolute; top: 2rem; width: 100%; text-align: center;">Timeless Memories
+    </h2>
+
+    <div class="gallery-wrap">
+        <div class="photo-frame" onclick="viewPhoto(0)">
+            <img src="" id="img-0" alt="Memory">
+            <div class="caption">The Beginning</div>
+        </div>
+
+        <div class="photo-frame" onclick="viewPhoto(1)">
+            <img src="" id="img-1" alt="Memory">
+            <div class="caption">Unforgettable</div>
+        </div>
+
+        <div class="photo-frame" onclick="viewPhoto(2)">
+            <img src="" id="img-2" alt="Memory">
+            <div class="caption">Forever</div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal-view" id="modal" onclick="closeModal()">
+        <img src="" class="modal-img" id="modal-img">
+    </div>
+
+    <div class="nav-dock">
+        <a href="gift.html" class="nav-link"><i class="fas fa-arrow-left"></i></a>
+        <a href="letter.html" class="nav-link"><i class="fas fa-arrow-right"></i></a>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        // Load Photos
+        clientData.photos.forEach((src, i) => {
+            const img = document.getElementById(`img-${i}`);
+            if (img) img.src = src;
+        });
+
+        // Animations
+        gsap.to(".photo-frame", {
+            opacity: 1,
+            y: 0,
+            duration: 1.5,
+            stagger: 0.3,
+            scale: 1,
+            ease: "power3.out",
+            delay: 0.5
+        });
+
+        const modal = document.getElementById('modal');
+        const modalImg = document.getElementById('modal-img');
+
+        function viewPhoto(idx) {
+            modal.style.display = 'flex';
+            modalImg.src = clientData.photos[idx] || '';
+            gsap.from(modalImg, { scale: 0.8, opacity: 0, duration: 0.5 });
+        }
+
+        function closeModal() {
+            gsap.to(modalImg, {
+                scale: 0.8, opacity: 0, duration: 0.3, onComplete: () => {
+                    modal.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>

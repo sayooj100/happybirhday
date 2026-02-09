@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Celebration</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        .hero {
+            text-align: center;
+            padding: 2rem;
+            z-index: 10;
+        }
+
+        .profile-frame {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 2px solid var(--accent-gold);
+            padding: 5px;
+            margin: 0 auto 2rem;
+            opacity: 0;
+            /* GSAP will reveal */
+            transform: scale(0.8);
+        }
+
+        .profile-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            filter: grayscale(100%);
+            transition: filter 0.5s;
+        }
+
+        .profile-frame:hover .profile-img {
+            filter: grayscale(0%);
+        }
+
+        .hero h1 span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <audio id="bg-music" loop>
+        <source src="" type="audio/mpeg">
+    </audio>
+
+    <div class="hero">
+        <div class="profile-frame" id="profile">
+            <img src="https://via.placeholder.com/150" alt="Profile" class="profile-img" id="user-photo">
+        </div>
+
+        <h1 id="greeting">
+            <!-- Text injected via JS split for animation -->
+            Happy Birthday
+        </h1>
+
+        <p class="gsap-reveal">A moment dedicated to you.</p>
+
+        <a href="cake.html" class="btn-gold gsap-reveal" style="margin-top: 2rem;" onclick="startJourney(event)">Begin
+            Experience</a>
+    </div>
+
+    <div class="scroll-indicator">Turn up volume</div>
+
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        function startJourney(e) {
+            e.preventDefault();
+            // Smooth Exit Animation
+            gsap.to("body", {
+                opacity: 0,
+                duration: 1.5,
+                ease: "power2.inOut",
+                onComplete: () => {
+                    window.location.href = 'cake.html';
+                }
+            });
+        }
+
+        // Custom Page Animation
+        gsap.to("#profile", {
+            opacity: 1,
+            scale: 1,
+            duration: 1.5,
+            ease: "elastic.out(1, 0.5)",
+            delay: 0.2
+        });
+
+        // Split text animation for H1 if not dynamic
+        const h1 = document.getElementById('greeting');
+        h1.innerHTML = `Happy Birthday<br><span style="color:var(--accent-gold); font-style:italic;">${clientData.herName}</span>`;
+
+        gsap.from("#greeting", {
+            opacity: 0,
+            y: 30,
+            duration: 1.2,
+            ease: "power3.out",
+            delay: 0.8
+        });
+
+        document.getElementById('user-photo').src = clientData.photos[0] || 'https://via.placeholder.com/150';
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Make a Wish</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <style>
+        .canvas-container {
+            width: 100%;
+            max-width: 500px;
+            height: 400px;
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* Start hidden for smooth entrance */
+            opacity: 0;
+            transform: scale(1.1);
+        }
+
+        canvas {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
+        }
+
+        /* IMPORTANT: Override global fade to let custom timeline handle entrance */
+        body {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        /* Hide elements initially to prevent FOUC (Flash of Unstyled Content) */
+        #sub-heading,
+        #main-heading,
+        #cut-btn {
+            opacity: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="glass-panel" style="text-align: center; padding: 4rem 2rem;">
+        <h2 id="sub-heading"
+            style="margin-bottom: 0.5rem; font-size: 1.5rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.1em; transform: translateY(-30px);">
+            A Special Cake For You</h2>
+        <h1 id="main-heading"
+            style="margin-bottom: 2rem; font-size: 3.5rem; color: var(--accent-gold); transform: scale(0.8);">Make a
+            Wish</h1>
+
+        <div class="canvas-container">
+            <canvas id="cake-canvas"></canvas>
+        </div>
+
+        <button class="btn-gold" id="cut-btn" style="margin-top: 2rem; transform: translateY(30px);">I Have Made My Wish
+            <i class="fas fa-arrow-right"></i></button>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        const canvas = document.getElementById('cake-canvas');
+        const ctx = canvas.getContext('2d');
+        const cutBtn = document.getElementById('cut-btn');
+
+        // Image Sequence Config
+        const frameCount = 120;
+        const fps = 15;
+        const images = [];
+        let currentFrame = 0;
+
+        // Path generator
+        const currentPath = (index) => `assets/cake/ezgif-frame-${index.toString().padStart(3, '0')}.jpg`;
+
+        // Preload Images
+        let loadedCount = 0;
+        for (let i = 1; i <= frameCount; i++) {
+            const img = new Image();
+            img.src = currentPath(i);
+            img.onload = () => {
+                loadedCount++;
+                if (loadedCount === frameCount) {
+                    startAnimation();
+                }
+            };
+            images.push(img);
+        }
+
+        function startAnimation() {
+            // Set canvas dimensions from the first successfully loaded image
+            const firstValid = images.find(img => img.width > 0);
+            if (firstValid) {
+                canvas.width = firstValid.width;
+                canvas.height = firstValid.height;
+                // Draw first frame immediately
+                ctx.drawImage(firstValid, 0, 0);
+            }
+
+            // Loop Animation
+            setInterval(() => {
+                const img = images[currentFrame];
+                if (img && img.complete && img.naturalWidth > 0) {
+                    // optimization: NO clearRect. Just draw over top to prevent white flashing.
+                    ctx.drawImage(img, 0, 0);
+                }
+                currentFrame++;
+                if (currentFrame >= frameCount) currentFrame = 0;
+            }, 1000 / fps);
+        }
+
+        // Interaction
+        cutBtn.addEventListener('click', () => {
+            gsap.to("body", {
+                opacity: 0,
+                duration: 1,
+                onComplete: () => {
+                    window.location.href = 'gift.html';
+                }
+            });
+        });
+
+        // Custom Entrance Animation (Using .to() instead of .from() for stability)
+        window.onload = () => {
+            const tl = gsap.timeline();
+
+            tl.to("#sub-heading", {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                ease: "power3.out"
+            })
+                .to("#main-heading", {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 1,
+                    ease: "back.out(1.7)"
+                }, "-=0.5")
+                .to(".canvas-container", {
+                    scale: 1,
+                    opacity: 1,
+                    duration: 1.2,
+                    ease: "power2.out"
+                }, "-=0.5")
+                .to("#cut-btn", {
+                    y: 0,
+                    opacity: 1,
+                    duration: 1,
+                    ease: "power3.out"
+                }, "-=0.8");
+        };
+    </script>
+</body>
+
+</html>

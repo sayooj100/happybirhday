@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Gift</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .gift-container {
+            display: flex;
+            gap: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .luxury-box {
+            width: 250px;
+            height: 300px;
+            background: #1e293b;
+            border: 1px solid var(--accent-gold);
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .luxury-box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.2);
+        }
+
+        .luxury-box::after {
+            content: '';
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .icon-large {
+            font-size: 3rem;
+            color: var(--accent-gold);
+            margin-bottom: 1rem;
+        }
+
+        .box-title {
+            font-family: var(--font-heading);
+            font-size: 1.2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .reveal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .love-icon {
+            font-size: 5rem;
+            color: var(--accent-gold);
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2 class="gsap-reveal">Select Your Gift</h2>
+
+    <div class="gift-container">
+        <!-- Box 1 -->
+        <div class="luxury-box gsap-reveal" id="box-1" onclick="selectGift(1, this)">
+            <i class="fas fa-gem icon-large"></i>
+            <span class="box-title">Jewelry</span>
+        </div>
+
+        <!-- Box 2 -->
+        <div class="luxury-box gsap-reveal" id="box-2" onclick="selectGift(2, this)">
+            <i class="fas fa-plane icon-large"></i>
+            <span class="box-title">Travel</span>
+        </div>
+
+        <!-- Box 3 -->
+        <div class="luxury-box gsap-reveal" id="box-3" onclick="selectGift(3, this)">
+            <i class="fas fa-shopping-bag icon-large"></i>
+            <span class="box-title">Fashion</span>
+        </div>
+
+        <!-- Box 4 (The Correct Choice) -->
+        <div class="luxury-box gsap-reveal" id="bf-box" onclick="selectGift(4, this)"
+            style="border-color: var(--accent-gold-light);">
+            <i class="fas fa-user-tie icon-large"></i>
+            <span class="box-title">Boyfriend</span>
+        </div>
+    </div>
+
+    <!-- Toast Message for Wrong Choice -->
+    <div id="toast"
+        style="position: fixed; bottom: 50px; left: 50%; transform: translateX(-50%); background: rgba(220, 38, 38, 0.9); color: white; padding: 1rem 2rem; border-radius: 50px; opacity: 0; pointer-events: none; transition: opacity 0.3s; z-index: 100; font-family: var(--font-body); width: max-content;">
+        Wrong choice! Look for something more valuable... 😉
+    </div>
+
+    <!-- Reveal Screen -->
+    <div class="reveal-overlay" id="reveal">
+        <i class="fas fa-heart love-icon" id="big-heart"></i>
+        <h1 style="font-size: 3rem;" id="reveal-text">I knew it...</h1>
+        <p style="margin-top: 1rem; font-size: 1.5rem;" id="reveal-sub">You'd choose me ❤️</p>
+
+        <div class="nav-dock">
+            <a href="gallery.html" class="nav-link"><i class="fas fa-arrow-right"></i> Continue</a>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        function selectGift(id, element) {
+            // Rejection Logic
+            if (id !== 4) {
+                // Shake the wrong box
+                gsap.to(element, { x: 10, duration: 0.1, yoyo: true, repeat: 5 });
+
+                // Show toast message
+                const toast = document.getElementById('toast');
+                const messages = [
+                    "Wrong choice! Look again... 😉",
+                    "Not valuable enough! Try harder.",
+                    "Seriously? You want THAT over me? 🤨",
+                    "Choose something PRICELESS! ❤️"
+                ];
+                toast.innerText = messages[Math.floor(Math.random() * messages.length)];
+                toast.style.opacity = 1;
+
+                // Hide after 2s
+                setTimeout(() => {
+                    toast.style.opacity = 0;
+                }, 2000);
+
+                return; // STOP EXECUTION HERE
+            }
+
+            // Correct Selection (id === 4)
+
+            // Animate Boxes Out
+            gsap.to(".luxury-box", {
+                scale: 0.8,
+                opacity: 0,
+                duration: 0.5,
+                stagger: 0.1
+            });
+
+            gsap.to("h2", { opacity: 0, duration: 0.5 });
+
+            // Reveal Overlay
+            const overlay = document.getElementById('reveal');
+            overlay.style.pointerEvents = "auto";
+
+            document.getElementById('reveal-text').innerText = "I Knew It...";
+            document.getElementById('reveal-sub').innerText = "You'd choose me ❤️";
+
+            gsap.to(overlay, {
+                opacity: 1,
+                duration: 1,
+                delay: 0.5,
+                onComplete: () => {
+                    triggerGoldConfetti();
+                    gsap.from("#big-heart", { scale: 0, duration: 1.5, ease: "elastic.out(1, 0.3)" });
+                }
+            });
+        }
+    </script>
+</body>
+
+</html>
